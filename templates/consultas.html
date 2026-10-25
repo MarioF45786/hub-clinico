@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Consultas - Hub Clínico</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/hub.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+	</head>
+	<body>
+		{% include "nav.html" %}
+
+		<main class="contenido">
+			<div class="cabecera">
+				<h1>{% if session['rol'] == 'medico' %}Mis consultas{% else %}Consultas{% endif %}</h1>
+				<a class="btn" href="/consultas/insertar">Agendar consulta</a>
+			</div>
+
+			<form class="filtros" action="/consultas" method="GET">
+				<div class="campo">
+					<label for="buscar">Paciente, médico o número</label>
+					<input type="search" id="buscar" name="buscar" value="{{ buscar }}">
+				</div>
+				<div class="campo">
+					<label for="estado">Estado</label>
+					<select id="estado" name="estado">
+						<option value="">Todos</option>
+						<option value="planeado" {% if estado == 'planeado' %} selected {% endif %}>Planeado</option>
+						<option value="en_curso" {% if estado == 'en_curso' %} selected {% endif %}>En curso</option>
+						<option value="finalizado" {% if estado == 'finalizado' %} selected {% endif %}>Finalizado</option>
+						<option value="cancelado" {% if estado == 'cancelado' %} selected {% endif %}>Cancelado</option>
+					</select>
+				</div>
+				<button class="btn btn--sec" type="submit">Buscar</button>
+			</form>
+
+			<p class="tenue">{{ Consultas | length }} consulta(s)</p>
+
+			<div class="tabla-caja">
+			<table>
+				<thead>
+				<tr>
+					<th>No.</th>
+					<th>Fecha</th>
+					<th>Paciente</th>
+					<th>Médico</th>
+					<th>Institución</th>
+					<th>Tipo</th>
+					<th>Diagnóstico principal</th>
+					<th>Estado</th>
+					<th></th>
+				</tr>
+				</thead>
+				<tbody>
+				{% for consulta in Consultas %}
+				<tr>
+					<td>{{ consulta[0] }}</td>
+					<td>{{ consulta[1].strftime('%d/%m/%Y %H:%M') }}</td>
+					<td><a href="{{ url_for('paciente', id_paciente=consulta[9]) }}">{{ consulta[2] }}</a></td>
+					<td>{{ consulta[3] }}</td>
+					<td>{{ consulta[4] }}</td>
+					<td>{{ consulta[5] }}</td>
+					<td>{{ consulta[8] or '' }}</td>
+					<td><span class="chip {% if consulta[7] == 'finalizado' %}chip--ok{% elif consulta[7] == 'cancelado' %}chip--alerta{% else %}chip--info{% endif %}">{{ consulta[7] }}</span></td>
+					<td>
+						<a class="btn btn--sec btn--chico" href="{{ url_for('consulta', id_consulta=consulta[0]) }}">Ver</a>
+						{% if consulta[7] in ['planeado', 'en_curso'] %}
+						<a class="btn btn--sec btn--chico" href="{{ url_for('editar_consulta', id_consulta=consulta[0]) }}">Editar</a>
+						<a class="btn btn--peligro btn--chico" href="{{ url_for('borrar_consulta', id_consulta=consulta[0]) }}">Cancelar</a>
+						{% endif %}
+					</td>
+				</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+			</div>
+		</main>
+	</body>
+</html>

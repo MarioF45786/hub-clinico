@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Consulta - Hub Clínico</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/hub.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+	</head>
+	<body>
+		{% include "nav.html" %}
+
+		<main class="contenido">
+			<p class="migas"><a href="/consultas">Consultas</a> / Consulta {{ Consulta[0] }}</p>
+
+			<div class="cabecera">
+				<h1>Consulta {{ Consulta[0] }}: {{ Consulta[2] }}</h1>
+				{% if Consulta[10] in ['planeado', 'en_curso'] %}
+				<div class="acciones">
+					<a class="btn btn--sec" href="{{ url_for('editar_consulta', id_consulta=Consulta[0]) }}">Editar</a>
+					<a class="btn btn--peligro" href="{{ url_for('borrar_consulta', id_consulta=Consulta[0]) }}">Cancelar consulta</a>
+				</div>
+				{% endif %}
+			</div>
+
+			<section class="panel">
+				<div class="panel__cabeza"><h2>Datos de la consulta</h2>
+					<span class="chip {% if Consulta[10] == 'finalizado' %}chip--ok{% elif Consulta[10] == 'cancelado' %}chip--alerta{% else %}chip--info{% endif %}">{{ Consulta[10] }}</span>
+				</div>
+				<div class="panel__cuerpo">
+					<dl class="datos-consulta">
+						<div><dt>Paciente</dt><dd><a href="{{ url_for('paciente', id_paciente=Consulta[1]) }}">{{ Consulta[2] }}</a></dd></div>
+						<div><dt>Médico</dt><dd>{{ Consulta[4] }}</dd></div>
+						<div><dt>Institución</dt><dd>{{ Consulta[5] }}</dd></div>
+						<div><dt>Tipo</dt><dd>{{ Consulta[6] }}</dd></div>
+						<div><dt>Inicio</dt><dd>{{ Consulta[8].strftime('%d/%m/%Y %H:%M') }}</dd></div>
+						<div><dt>Fin</dt><dd>{{ Consulta[9].strftime('%d/%m/%Y %H:%M') if Consulta[9] else '-' }}</dd></div>
+						<div><dt>Motivo</dt><dd>{{ Consulta[7] or 'Sin motivo' }}</dd></div>
+						<div><dt>Diagnóstico principal</dt><dd>{% if Consulta[12] %}{{ Consulta[11] }} {{ Consulta[12] }}{% else %}Sin diagnóstico{% endif %}</dd></div>
+					</dl>
+				</div>
+			</section>
+		</main>
+	</body>
+</html>

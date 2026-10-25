@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Baja de médico - Hub Clínico</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/hub.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+	</head>
+	<body>
+		{% include "nav.html" %}
+
+		<main class="contenido">
+			<h1>Dar de baja a {{ Medico[2] }} {{ Medico[3] }}</h1>
+			<p>El médico <b>no se borra</b>: queda inactivo, se cierran sus vínculos con las instituciones y se desactiva su cuenta.
+			   Sus {{ Medico[8] }} consulta(s) se conservan. No procede si tiene consultas planeadas o en curso.</p>
+
+<!---INICIO FORMULARIO---!>
+<form action="/medicos/baja" method="POST" onsubmit="return confirm('¿Seguro que quieres dar de baja a este médico?')">
+	<input type="hidden" name="id_medico" value="{{ Medico[0] }}">
+	<div class="acciones">
+		<button class="btn btn--peligro" type="submit">Dar de baja</button>
+		<a class="btn btn--sec" href="{{ url_for('medico', id_medico=Medico[0]) }}">Cancelar</a>
+	</div>
+</form>
+<!---FIN FORMULARIO---!>
+		</main>
+	</body>
+</html>

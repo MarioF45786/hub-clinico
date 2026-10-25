@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Entrar - Hub Clínico</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/hub.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+	</head>
+	<body>
+		<div class="acceso">
+			<section class="acceso__lado">
+				<div class="marca"><div><strong>Hub Clínico</strong><span>Interoperabilidad HL7 FHIR</span></div></div>
+				<h1>Un paciente, un expediente, aunque lo atiendan en tres lugares</h1>
+				<p>El hub junta la información clínica de un paciente que llega de varias instituciones y guarda de dónde vino cada dato.</p>
+			</section>
+
+			<section class="acceso__form">
+<!---INICIO FORMULARIO---!>
+<form action="/login" method="POST" novalidate onsubmit="return validarLogin()">
+	<h2>Entrar al hub</h2>
+
+	<!--- Mensajes de error del servidor --->
+	{% for categoria, mensaje in get_flashed_messages(with_categories=true) %}
+	<p style="color:{% if categoria == 'error' %}#b42318{% else %}#1d7f48{% endif %}">{{ mensaje }}</p>
+	{% endfor %}
+	<p id="error" style="color:#b42318"></p>
+
+	<div class="campo">
+		<label for="correo">Correo:</label>
+		<input type="email" id="correo" name="correo" maxlength="150" value="{{ correo or '' }}" required>
+	</div>
+
+	<div class="campo">
+		<label for="contrasena">Contraseña:</label>
+		<input type="password" id="contrasena" name="contrasena" required>
+	</div>
+
+	<button class="btn" type="submit">Entrar</button>
+</form>
+<!---FIN FORMULARIO---!>
+			</section>
+		</div>
+
+		<script>
+			// Validación en el navegador antes de enviar
+			function validarLogin() {
+				var correo = document.getElementById("correo").value.trim();
+				var contrasena = document.getElementById("contrasena").value;
+				if (correo == "" || contrasena == "") {
+					document.getElementById("error").textContent = "Escribe tu correo y tu contraseña.";
+					return false;
+				}
+				if (correo.indexOf("@") == -1) {
+					document.getElementById("error").textContent = "El correo no es válido.";
+					return false;
+				}
+				return true;
+			}
+		</script>
+	</body>
+</html>

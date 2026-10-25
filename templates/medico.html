@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Médico - Hub Clínico</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/hub.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+	</head>
+	<body>
+		{% include "nav.html" %}
+
+		<main class="contenido">
+			<p class="migas"><a href="/medicos">Médicos</a> / Médico {{ Medico[0] }}</p>
+
+			<div class="cabecera">
+				<h1>{{ Medico[2] }} {{ Medico[3] }} {{ Medico[4] or '' }}</h1>
+				{% if session['rol'] == 'administrador' and Medico[5] %}
+				<div class="acciones">
+					<a class="btn btn--sec" href="{{ url_for('editar_medico', id_medico=Medico[0]) }}">Editar</a>
+					<a class="btn btn--peligro" href="{{ url_for('borrar_medico', id_medico=Medico[0]) }}">Dar de baja</a>
+				</div>
+				{% endif %}
+			</div>
+
+			<section class="panel">
+				<div class="panel__cabeza"><h2>Datos del médico</h2></div>
+				<div class="panel__cuerpo">
+					<dl class="datos-consulta">
+						<div><dt>Número</dt><dd>{{ Medico[0] }}</dd></div>
+						<div><dt>Cédula profesional</dt><dd>{{ Medico[1] }}</dd></div>
+						<div><dt>Especialidades</dt><dd>{{ Medico[6] or 'Sin especialidad' }}</dd></div>
+						<div><dt>Instituciones vigentes</dt><dd>{{ Medico[7] or 'Ninguna' }}</dd></div>
+						<div><dt>Consultas</dt><dd>{{ Medico[8] }}</dd></div>
+						<div><dt>Estado</dt><dd>{{ 'Activo' if Medico[5] else 'Dado de baja' }}</dd></div>
+					</dl>
+				</div>
+			</section>
+
+			<h2>Consultas del médico</h2>
+			<div class="tabla-caja">
+			<table>
+				<thead>
+				<tr>
+					<th>No.</th>
+					<th>Fecha</th>
+					<th>Paciente</th>
+					<th>Institución</th>
+					<th>Tipo</th>
+					<th>Estado</th>
+				</tr>
+				</thead>
+				<tbody>
+				{% for c in Consultas %}
+				<tr>
+					<td>{{ c[0] }}</td>
+					<td>{{ c[1].strftime('%d/%m/%Y %H:%M') }}</td>
+					<td>{{ c[2] }}</td>
+					<td>{{ c[4] }}</td>
+					<td>{{ c[5] }}</td>
+					<td>{{ c[7] }}</td>
+				</tr>
+				{% else %}
+				<tr><td colspan="6">Sin consultas.</td></tr>
+				{% endfor %}
+				</tbody>
+			</table>
+			</div>
+		</main>
+	</body>
+</html>

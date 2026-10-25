@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Agendar consulta - Hub Clínico</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/hub.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+	</head>
+	<body>
+		{% include "nav.html" %}
+
+		<main class="contenido">
+			<h1>Agendar consulta</h1>
+			<p class="gris">Si la fecha es futura queda <b>planeada</b>; si es hoy o ya pasó, queda <b>en curso</b>.</p>
+			<p id="error" style="color:#b42318"></p>
+
+<!---INICIO FORMULARIO---!>
+<form class="panel panel__cuerpo formulario" action="/consultas/registra" method="POST" novalidate onsubmit="return validarConsulta()">
+	<br>
+	<div class="fila-campos">
+		<div class="campo">
+			<label for="id_paciente">Paciente:</label>
+			<select id="id_paciente" name="id_paciente" required>
+				<option value="">-- Seleccionar --</option>
+				{% for p in Pacientes %}
+				<option value="{{ p[0] }}" {% if Datos.get('id_paciente') == p[0]|string %} selected {% endif %}>{{ p[1] }} ({{ p[0] }})</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div class="campo">
+			<label for="vinculo">Médico e institución:</label>
+			<!--- El valor lleva los dos números: id_medico|id_institucion --->
+			<select id="vinculo" name="vinculo" required>
+				<option value="">-- Seleccionar --</option>
+				{% for v in Vinculos %}
+				{% set valor = v[0]|string + '|' + v[2]|string %}
+				<option value="{{ valor }}" {% if Datos.get('vinculo') == valor %} selected {% endif %}>{{ v[1] }} - {{ v[3] }}{% if v[4] %} ({{ v[4] }}){% endif %}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+
+	<div class="fila-campos">
+		<div class="campo">
+			<label for="tipo_encuentro">Tipo:</label>
+			<select id="tipo_encuentro" name="tipo_encuentro">
+				<option value="consulta_externa">Consulta externa</option>
+				<option value="urgencias" {% if Datos.get('tipo_encuentro') == 'urgencias' %} selected {% endif %}>Urgencias</option>
+				<option value="hospitalizacion" {% if Datos.get('tipo_encuentro') == 'hospitalizacion' %} selected {% endif %}>Hospitalización</option>
+				<option value="toma_muestra" {% if Datos.get('tipo_encuentro') == 'toma_muestra' %} selected {% endif %}>Toma de muestra</option>
+			</select>
+		</div>
+		<div class="campo">
+			<label for="fecha_inicio">Fecha y hora:</label>
+			<input type="datetime-local" id="fecha_inicio" name="fecha_inicio" value="{{ Datos.get('fecha_inicio', '') }}" required>
+		</div>
+	</div>
+
+	<div class="campo">
+		<label for="motivo">Motivo:</label>
+		<input type="text" id="motivo" name="motivo" maxlength="250" value="{{ Datos.get('motivo', '') }}">
+	</div>
+
+	<div class="acciones">
+		<button class="btn" type="submit">Guardar</button>
+		<a class="btn btn--sec" href="/consultas">Cancelar</a>
+	</div>
+</form>
+<!---FIN FORMULARIO---!>
+		</main>
+
+		<script>
+			function validarConsulta() {
+				var error = document.getElementById("error");
+				var paciente = document.getElementById("id_paciente").value;
+				var vinculo = document.getElementById("vinculo").value;
+				var fecha = document.getElementById("fecha_inicio").value;
+
+				if (paciente == "" || vinculo == "" || fecha == "") {
+					error.textContent = "Paciente, médico y fecha son obligatorios.";
+					return false;
+				}
+				// No se agendan consultas con más de un año de anticipación
+				var limite = new Date();
+				limite.setFullYear(limite.getFullYear() + 1);
+				if (new Date(fecha) > limite) {
+					error.textContent = "La fecha no puede ser de más de un año en el futuro.";
+					return false;
+				}
+				return true;
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Baja de paciente - Hub Clínico</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/hub.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+	</head>
+	<body>
+		{% include "nav.html" %}
+
+		<main class="contenido">
+			<h1>Dar de baja a {{ Paciente[1] }} {{ Paciente[2] }}</h1>
+			<p>El paciente <b>no se borra</b>: queda como <b>inactivo</b> y conserva todo su historial ({{ Paciente[9] }} consulta(s)).
+			   Sus consultas planeadas a futuro se cancelan.</p>
+
+<!---INICIO FORMULARIO---!>
+<form class="panel panel__cuerpo formulario" action="/pacientes/baja" method="POST" novalidate onsubmit="return confirmarBaja()">
+	<br>
+	<input type="hidden" name="id_paciente" value="{{ Paciente[0] }}">
+
+	<div class="campo">
+		<label for="motivo">Motivo de la baja:</label>
+		<textarea id="motivo" name="motivo" maxlength="200" required></textarea>
+	</div>
+
+	<div class="acciones">
+		<button class="btn btn--peligro" type="submit">Dar de baja</button>
+		<a class="btn btn--sec" href="{{ url_for('paciente', id_paciente=Paciente[0]) }}">Cancelar</a>
+	</div>
+</form>
+<!---FIN FORMULARIO---!>
+		</main>
+
+		<script>
+			function confirmarBaja() {
+				if (document.getElementById("motivo").value.trim() == "") {
+					alert("Escribe el motivo de la baja.");
+					return false;
+				}
+				return confirm("¿Seguro que quieres dar de baja a este paciente?");
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Inicio - Hub Clínico</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/hub.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+	</head>
+	<body>
+		{% include "nav.html" %}
+
+		<main class="contenido">
+			<h1>Hola, {{ session['nombre'] }}</h1>
+			<p class="gris">Entraste como <b>{{ session['rol'] }}</b>. El menú de arriba muestra solo lo que tu rol puede usar.</p>
+
+			<!--- Datos de la vista v_indicadores_atencion --->
+			<h2>Indicadores de atención</h2>
+			<div class="indicadores">
+				<div class="indicador"><b>{{ Indicadores[0] }}</b><span>Pacientes activos</span></div>
+				<div class="indicador"><b>{{ Indicadores[1] }}</b><span>Médicos activos</span></div>
+				<div class="indicador"><b>{{ Indicadores[2] }}</b><span>Consultas finalizadas</span></div>
+				<div class="indicador"><b>{{ Indicadores[3] }}</b><span>Consultas pendientes</span></div>
+			</div>
+			<p class="tenue">Consultas canceladas: {{ Indicadores[4] }}</p>
+
+			<h2>¿Qué puedo hacer?</h2>
+			<ul>
+				{% if session['rol'] == 'coordinador' %}
+				<li><a href="/pacientes">Pacientes</a>: registrar, editar y dar de baja.</li>
+				<li><a href="/consultas">Consultas</a>: agendar, actualizar y cancelar cualquier consulta.</li>
+				<li><a href="/medicos">Médicos</a>: consultar el directorio.</li>
+				{% elif session['rol'] == 'medico' %}
+				<li><a href="/pacientes">Pacientes</a>: ver expedientes.</li>
+				<li><a href="/consultas">Consultas</a>: agendar, actualizar y cancelar tus consultas.</li>
+				{% elif session['rol'] == 'administrador' %}
+				<li><a href="/medicos">Médicos</a>: registrar, editar y dar de baja.</li>
+				{% endif %}
+				<li><a href="/reportes">Reportes</a>: consultas por especialidad y consultas pendientes.</li>
+			</ul>
+		</main>
+	</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Editar consulta - Hub Clínico</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/hub.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+	</head>
+	<body>
+		{% include "nav.html" %}
+
+		<main class="contenido">
+			<h1>Actualizar consulta {{ Consulta[0] }}</h1>
+			<p class="gris">{{ Consulta[2] }} con {{ Consulta[4] }} en {{ Consulta[5] }}.</p>
+			<p id="error" style="color:#b42318"></p>
+
+<!---INICIO FORMULARIO---!>
+<form class="panel panel__cuerpo formulario" action="{{ url_for('actualizar_consulta') }}" method="POST" novalidate onsubmit="return validarConsulta()">
+	<br>
+	<input type="hidden" name="id_consulta" value="{{ Consulta[0] }}">
+	<!--- Fecha original, por si el campo de fecha está bloqueado --->
+	<input type="hidden" name="fecha_original" value="{{ Consulta[8].strftime('%Y-%m-%dT%H:%M:%S') }}">
+
+	<div class="fila-campos">
+		<div class="campo">
+			<label for="fecha_inicio">Fecha y hora:</label>
+			<input type="datetime-local" id="fecha_inicio" name="fecha_inicio" value="{{ Consulta[8].strftime('%Y-%m-%dT%H:%M') }}"
+				{% if Consulta[10] != 'planeado' %} disabled {% endif %}>
+			{% if Consulta[10] != 'planeado' %}<small>La fecha ya no cambia porque la consulta está en curso.</small>{% endif %}
+		</div>
+		<div class="campo">
+			<label for="estado">Estado:</label>
+			<!--- Cambios permitidos: planeado -> en curso -> finalizado --->
+			<select id="estado" name="estado">
+				{% if Consulta[10] == 'planeado' %}
+				<option value="planeado" selected>Planeado</option>
+				<option value="en_curso">En curso (el paciente llegó)</option>
+				{% else %}
+				<option value="en_curso" selected>En curso</option>
+				<option value="finalizado">Finalizado</option>
+				{% endif %}
+			</select>
+		</div>
+	</div>
+
+	<div class="campo">
+		<label for="motivo">Motivo:</label>
+		<input type="text" id="motivo" name="motivo" maxlength="250" value="{{ Consulta[7] or '' }}">
+	</div>
+
+	<div class="acciones">
+		<button class="btn" type="submit">Guardar</button>
+		<a class="btn btn--sec" href="{{ url_for('consulta', id_consulta=Consulta[0]) }}">Cancelar</a>
+	</div>
+</form>
+<!---FIN FORMULARIO---!>
+		</main>
+
+		<script>
+			function validarConsulta() {
+				var campo = document.getElementById("fecha_inicio");
+				if (!campo.disabled && campo.value == "") {
+					document.getElementById("error").textContent = "La fecha y hora son obligatorias.";
+					return false;
+				}
+				return true;
+			}
+		</script>
+	</body>
+</html>

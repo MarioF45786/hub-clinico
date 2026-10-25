@@ -1,0 +1,38 @@
+<!--- Menú común: cada página lo pega arriba con include --->
+<header class="encabezado">
+	<div class="encabezado__interior">
+		<a class="marca" href="/">
+			<div><strong>Hub Clínico</strong><span>Interoperabilidad HL7 FHIR</span></div>
+		</a>
+		<div></div>
+		<div class="sesion">
+			<div><label>{{ session['rol'] }}</label><span>{{ session['nombre'] }}</span></div>
+			<a class="sesion__salir" href="/logout" target="_self">Salir</a>
+		</div>
+	</div>
+</header>
+
+<!--- El menú cambia según el rol del usuario --->
+<nav class="modulos">
+	<div class="modulos__interior">
+		<a href="/" target="_self">Inicio</a>
+		{% if session['rol'] in ['coordinador', 'medico'] %}
+		<a href="/pacientes" target="_self">Pacientes</a>
+		<a href="/consultas" target="_self">Consultas</a>
+		{% endif %}
+		{% if session['rol'] in ['administrador', 'coordinador'] %}
+		<a href="/medicos" target="_self">Médicos</a>
+		{% endif %}
+		<a href="/reportes" target="_self">Reportes</a>
+	</div>
+</nav>
+
+<!--- Mensajes de éxito y error (flash) --->
+<div class="avisos-flotantes">
+	{% for categoria, mensaje in get_flashed_messages(with_categories=true) %}
+	<div class="aviso-flotante {% if categoria == 'error' %}aviso-flotante--error{% endif %}">
+		{{ mensaje }}
+		<button type="button" class="aviso-cerrar" onclick="this.parentElement.remove()">×</button>
+	</div>
+	{% endfor %}
+</div>

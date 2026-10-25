@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Reportes - Hub Clínico</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/hub.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+	</head>
+	<body>
+		{% include "nav.html" %}
+
+		<main class="contenido">
+			<h1>Reportes</h1>
+
+			<!--- Vista v_consultas_por_especialidad --->
+			<h2>Consultas por especialidad</h2>
+			<div class="tabla-caja">
+			<table>
+				<thead>
+				<tr>
+					<th>Especialidad</th>
+					<th>Consultas</th>
+					<th>Finalizadas</th>
+					<th>Pendientes</th>
+					<th>Pacientes distintos</th>
+				</tr>
+				</thead>
+				<tbody>
+				{% for e in Especialidades %}
+				<tr>
+					<td>{{ e[0] }}</td>
+					<td>{{ e[1] }}</td>
+					<td>{{ e[2] }}</td>
+					<td>{{ e[3] }}</td>
+					<td>{{ e[4] }}</td>
+				</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+			</div>
+
+			<!--- Vista v_consultas_pendientes --->
+			<h2>Consultas pendientes (planeadas o en curso)</h2>
+			<div class="tabla-caja">
+			<table>
+				<thead>
+				<tr>
+					<th>No.</th>
+					<th>Fecha</th>
+					<th>Paciente</th>
+					<th>Teléfono</th>
+					<th>Médico</th>
+					<th>Institución</th>
+					<th>Estado</th>
+				</tr>
+				</thead>
+				<tbody>
+				{% for c in Pendientes %}
+				<tr>
+					<td>{{ c[0] }}</td>
+					<td>{{ c[1].strftime('%d/%m/%Y %H:%M') }}</td>
+					<td>{{ c[2] }}</td>
+					<td>{{ c[3] or 'Sin teléfono' }}</td>
+					<td>{{ c[4] }}</td>
+					<td>{{ c[5] }}</td>
+					<td><span class="chip chip--info">{{ c[6] }}</span></td>
+				</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+			</div>
+		</main>
+	</body>
+</html>

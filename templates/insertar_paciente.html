@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Registrar paciente - Hub Clínico</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/hub.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+	</head>
+	<body>
+		{% include "nav.html" %}
+
+		<main class="contenido">
+			<h1>Registrar paciente</h1>
+			<p id="error" style="color:#b42318"></p>
+
+<!---INICIO FORMULARIO---!>
+<form class="panel panel__cuerpo formulario" action="/pacientes/registra" method="POST" novalidate onsubmit="return validarPaciente()">
+	<br>
+	<div class="fila-campos">
+		<div class="campo">
+			<label for="nombre">Nombre(s):</label>
+			<input type="text" id="nombre" name="nombre" maxlength="100" value="{{ Datos.get('nombre', '') }}" required>
+		</div>
+		<div class="campo">
+			<label for="apellido_paterno">Apellido paterno:</label>
+			<input type="text" id="apellido_paterno" name="apellido_paterno" maxlength="100" value="{{ Datos.get('apellido_paterno', '') }}" required>
+		</div>
+		<div class="campo">
+			<label for="apellido_materno">Apellido materno:</label>
+			<input type="text" id="apellido_materno" name="apellido_materno" maxlength="100" value="{{ Datos.get('apellido_materno', '') }}">
+		</div>
+	</div>
+
+	<div class="fila-campos">
+		<div class="campo">
+			<label for="fecha_nacimiento">Fecha de nacimiento:</label>
+			<input type="date" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ Datos.get('fecha_nacimiento', '') }}" required>
+		</div>
+		<div class="campo">
+			<label for="sexo">Sexo:</label>
+			<select id="sexo" name="sexo" required>
+				<option value="">-- Seleccionar --</option>
+				<option value="femenino" {% if Datos.get('sexo') == 'femenino' %} selected {% endif %}>Femenino</option>
+				<option value="masculino" {% if Datos.get('sexo') == 'masculino' %} selected {% endif %}>Masculino</option>
+				<option value="otro" {% if Datos.get('sexo') == 'otro' %} selected {% endif %}>Otro</option>
+				<option value="desconocido" {% if Datos.get('sexo') == 'desconocido' %} selected {% endif %}>Desconocido</option>
+			</select>
+		</div>
+		<div class="campo">
+			<label for="curp">CURP (opcional):</label>
+			<input type="text" id="curp" name="curp" maxlength="18" value="{{ Datos.get('curp', '') }}">
+			<small>18 caracteres, ejemplo: GATJ850312HNLRRS01</small>
+		</div>
+	</div>
+
+	<div class="acciones">
+		<button class="btn" type="submit">Guardar</button>
+		<a class="btn btn--sec" href="/pacientes">Cancelar</a>
+	</div>
+</form>
+<!---FIN FORMULARIO---!>
+		</main>
+
+		<script>
+			// Validaciones con JavaScript (el servidor y el procedimiento también validan)
+			function validarPaciente() {
+				var error = document.getElementById("error");
+				var nombre = document.getElementById("nombre").value.trim();
+				var apellido = document.getElementById("apellido_paterno").value.trim();
+				var fecha = document.getElementById("fecha_nacimiento").value;
+				var sexo = document.getElementById("sexo").value;
+				var curp = document.getElementById("curp").value.trim().toUpperCase();
+
+				if (nombre == "" || apellido == "" || fecha == "" || sexo == "") {
+					error.textContent = "Nombre, apellido paterno, fecha de nacimiento y sexo son obligatorios.";
+					return false;
+				}
+				if (new Date(fecha) > new Date()) {
+					error.textContent = "La fecha de nacimiento no puede ser futura.";
+					return false;
+				}
+				if (curp != "" && !/^[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[A-Z0-9][0-9]$/.test(curp)) {
+					error.textContent = "La CURP no tiene un formato válido.";
+					return false;
+				}
+				return true;
+			}
+		</script>
+	</body>
+</html>

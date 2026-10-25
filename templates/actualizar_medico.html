@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Editar médico - Hub Clínico</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/hub.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+	</head>
+	<body>
+		{% include "nav.html" %}
+
+		<main class="contenido">
+			<h1>Actualizar médico {{ Medico[0] }}</h1>
+			<p id="error" style="color:#b42318"></p>
+
+<!---INICIO FORMULARIO---!>
+<form class="panel panel__cuerpo formulario" action="{{ url_for('actualizar_medico') }}" method="POST" novalidate onsubmit="return validarMedico()">
+	<br>
+	<input type="hidden" name="id_medico" value="{{ Medico[0] }}">
+
+	<div class="fila-campos">
+		<div class="campo">
+			<label for="cedula">Cédula profesional:</label>
+			<input type="text" id="cedula" name="cedula" maxlength="8" value="{{ Medico[1] }}" required>
+		</div>
+		<div class="campo">
+			<label for="nombre">Nombre(s):</label>
+			<input type="text" id="nombre" name="nombre" maxlength="100" value="{{ Medico[2] }}" required>
+		</div>
+		<div class="campo">
+			<label for="apellido_paterno">Apellido paterno:</label>
+			<input type="text" id="apellido_paterno" name="apellido_paterno" maxlength="100" value="{{ Medico[3] }}" required>
+		</div>
+		<div class="campo">
+			<label for="apellido_materno">Apellido materno:</label>
+			<input type="text" id="apellido_materno" name="apellido_materno" maxlength="100" value="{{ Medico[4] or '' }}">
+		</div>
+	</div>
+
+	<div class="acciones">
+		<button class="btn" type="submit">Guardar</button>
+		<a class="btn btn--sec" href="{{ url_for('medico', id_medico=Medico[0]) }}">Cancelar</a>
+	</div>
+</form>
+<!---FIN FORMULARIO---!>
+		</main>
+
+		<script>
+			function validarMedico() {
+				var error = document.getElementById("error");
+				var cedula = document.getElementById("cedula").value.trim();
+				var nombre = document.getElementById("nombre").value.trim();
+				var apellido = document.getElementById("apellido_paterno").value.trim();
+
+				if (cedula == "" || nombre == "" || apellido == "") {
+					error.textContent = "Cédula, nombre y apellido paterno son obligatorios.";
+					return false;
+				}
+				if (!/^[0-9]{7,8}$/.test(cedula)) {
+					error.textContent = "La cédula profesional debe tener 7 u 8 dígitos.";
+					return false;
+				}
+				return true;
+			}
+		</script>
+	</body>
+</html>

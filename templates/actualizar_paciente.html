@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Editar paciente - Hub Clínico</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/hub.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+	</head>
+	<body>
+		{% include "nav.html" %}
+
+		<main class="contenido">
+			<h1>Actualizar paciente {{ Paciente[0] }}</h1>
+			<p id="error" style="color:#b42318"></p>
+
+<!---INICIO FORMULARIO---!>
+<!--- Mismo formulario que insertar, pero los campos ya vienen llenos --->
+<form class="panel panel__cuerpo formulario" action="{{ url_for('actualizar_paciente') }}" method="POST" novalidate onsubmit="return validarPaciente()">
+	<br>
+	<input type="hidden" name="id_paciente" value="{{ Paciente[0] }}">
+
+	<div class="fila-campos">
+		<div class="campo">
+			<label for="nombre">Nombre(s):</label>
+			<input type="text" id="nombre" name="nombre" maxlength="100" value="{{ Paciente[1] }}" required>
+		</div>
+		<div class="campo">
+			<label for="apellido_paterno">Apellido paterno:</label>
+			<input type="text" id="apellido_paterno" name="apellido_paterno" maxlength="100" value="{{ Paciente[2] }}" required>
+		</div>
+		<div class="campo">
+			<label for="apellido_materno">Apellido materno:</label>
+			<input type="text" id="apellido_materno" name="apellido_materno" maxlength="100" value="{{ Paciente[3] or '' }}">
+		</div>
+	</div>
+
+	<div class="fila-campos">
+		<div class="campo">
+			<label for="fecha_nacimiento">Fecha de nacimiento:</label>
+			<input type="date" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ Paciente[4] }}" required>
+		</div>
+		<div class="campo">
+			<label for="sexo">Sexo:</label>
+			<select id="sexo" name="sexo">
+				<option value="femenino" {% if Paciente[5] == "femenino" %} selected {% endif %}>Femenino</option>
+				<option value="masculino" {% if Paciente[5] == "masculino" %} selected {% endif %}>Masculino</option>
+				<option value="otro" {% if Paciente[5] == "otro" %} selected {% endif %}>Otro</option>
+				<option value="desconocido" {% if Paciente[5] == "desconocido" %} selected {% endif %}>Desconocido</option>
+			</select>
+		</div>
+		<div class="campo">
+			<label for="curp">CURP (opcional):</label>
+			<input type="text" id="curp" name="curp" maxlength="18" value="{{ Paciente[6] or '' }}">
+		</div>
+	</div>
+
+	<div class="acciones">
+		<button class="btn" type="submit">Guardar</button>
+		<a class="btn btn--sec" href="{{ url_for('paciente', id_paciente=Paciente[0]) }}">Cancelar</a>
+	</div>
+</form>
+<!---FIN FORMULARIO---!>
+		</main>
+
+		<script>
+			function validarPaciente() {
+				var error = document.getElementById("error");
+				var nombre = document.getElementById("nombre").value.trim();
+				var apellido = document.getElementById("apellido_paterno").value.trim();
+				var fecha = document.getElementById("fecha_nacimiento").value;
+				var curp = document.getElementById("curp").value.trim().toUpperCase();
+
+				if (nombre == "" || apellido == "" || fecha == "") {
+					error.textContent = "Nombre, apellido paterno y fecha de nacimiento son obligatorios.";
+					return false;
+				}
+				if (new Date(fecha) > new Date()) {
+					error.textContent = "La fecha de nacimiento no puede ser futura.";
+					return false;
+				}
+				if (curp != "" && !/^[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[A-Z0-9][0-9]$/.test(curp)) {
+					error.textContent = "La CURP no tiene un formato válido.";
+					return false;
+				}
+				return true;
+			}
+		</script>
+	</body>
+</html>

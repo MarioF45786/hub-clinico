@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Médicos - Hub Clínico</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/hub.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+	</head>
+	<body>
+		{% include "nav.html" %}
+
+		<main class="contenido">
+			<div class="cabecera">
+				<h1>Médicos</h1>
+				{% if session['rol'] == 'administrador' %}
+				<a class="btn" href="/medicos/insertar">Registrar médico</a>
+				{% endif %}
+			</div>
+
+			<form class="filtros" action="/medicos" method="GET">
+				<div class="campo">
+					<label for="buscar">Nombre, cédula o especialidad</label>
+					<input type="search" id="buscar" name="buscar" value="{{ buscar }}">
+				</div>
+				<div class="campo">
+					<label for="estado">Estado</label>
+					<select id="estado" name="estado">
+						<option value="activos" {% if estado == 'activos' %} selected {% endif %}>Activos</option>
+						<option value="baja" {% if estado == 'baja' %} selected {% endif %}>Dados de baja</option>
+						<option value="todos" {% if estado == 'todos' %} selected {% endif %}>Todos</option>
+					</select>
+				</div>
+				<button class="btn btn--sec" type="submit">Buscar</button>
+			</form>
+
+			<p class="tenue">{{ Medicos | length }} médico(s)</p>
+
+			<div class="tabla-caja">
+			<table>
+				<thead>
+				<tr>
+					<th>No.</th>
+					<th>Nombre</th>
+					<th>Cédula</th>
+					<th>Especialidades</th>
+					<th>Instituciones</th>
+					<th>Consultas</th>
+					<th>Estado</th>
+					<th></th>
+				</tr>
+				</thead>
+				<tbody>
+				{% for medico in Medicos %}
+				<tr>
+					<td>{{ medico[0] }}</td>
+					<td><a href="{{ url_for('medico', id_medico=medico[0]) }}">{{ medico[2] }}</a></td>
+					<td class="mono">{{ medico[1] }}</td>
+					<td>{{ medico[3] or '' }}</td>
+					<td>{{ medico[4] or '' }}</td>
+					<td>{{ medico[5] }}</td>
+					<td><span class="chip {% if medico[6] %}chip--ok{% else %}chip--alerta{% endif %}">{{ 'activo' if medico[6] else 'baja' }}</span></td>
+					<td>
+						<a class="btn btn--sec btn--chico" href="{{ url_for('medico', id_medico=medico[0]) }}">Ver</a>
+						{% if session['rol'] == 'administrador' and medico[6] %}
+						<a class="btn btn--sec btn--chico" href="{{ url_for('editar_medico', id_medico=medico[0]) }}">Editar</a>
+						<a class="btn btn--peligro btn--chico" href="{{ url_for('borrar_medico', id_medico=medico[0]) }}">Baja</a>
+						{% endif %}
+					</td>
+				</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+			</div>
+		</main>
+	</body>
+</html>

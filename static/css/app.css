@@ -1,0 +1,33 @@
+/* Ajustes de la app Flask sobre hub.css (el estilo del prototipo) */
+
+/* El atributo hidden siempre oculta (hub.css da display:grid a los paneles) */
+[hidden] { display: none !important; }
+
+/* Filas de tabla que llevan a otra página */
+tbody tr[data-href] { cursor: pointer; }
+tbody tr[data-href]:hover td { background: #f8fbf9; }
+
+/* Avisos flotantes: se pueden cerrar */
+.aviso-flotante { display: flex; gap: 10px; align-items: flex-start; justify-content: space-between; }
+.aviso-cerrar { background: none; border: 0; color: inherit; font-size: 1.2rem; line-height: 1; cursor: pointer; opacity: .8; padding: 0 2px; }
+.aviso-cerrar:hover { opacity: 1; }
+
+/* Formularios en panel */
+.formulario { display: grid; gap: 12px; }
+.formulario .acciones { margin-top: 4px; }
+.en-linea { display: inline; }
+dialog form { margin: 0; }
+
+/* Filtros que se envían solos al cambiar */
+.filtros button[type="submit"] { align-self: end; }
+
+/* Lista de datos de la consulta */
+.datos-consulta { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px 20px; margin: 0; }
+.datos-consulta div { display: grid; }
+.datos-consulta dt { font-size: .78rem; color: var(--tenue); }
+.datos-consulta dd { margin: 0; font-weight: 700; }
+
+.oculto { display: none !important; }
+
+/* Los campos no se estiran cuando otro campo de la misma fila tiene texto de ayuda */
+.campo > input, .campo > select, .campo > textarea { align-self: start; }

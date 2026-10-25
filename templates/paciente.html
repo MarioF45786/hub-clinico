@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Paciente - Hub Clínico</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/hub.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+	</head>
+	<body>
+		{% include "nav.html" %}
+
+		<main class="contenido">
+			<p class="migas"><a href="/pacientes">Pacientes</a> / Paciente {{ Paciente[0] }}</p>
+
+			<div class="cabecera">
+				<h1>{{ Paciente[1] }} {{ Paciente[2] }} {{ Paciente[3] or '' }}</h1>
+				<div class="acciones">
+					{% if Paciente[7] == 'activo' %}
+					<a class="btn" href="/consultas/insertar?paciente={{ Paciente[0] }}">Agendar consulta</a>
+					{% if session['rol'] == 'coordinador' %}
+					<a class="btn btn--sec" href="{{ url_for('editar_paciente', id_paciente=Paciente[0]) }}">Editar</a>
+					<a class="btn btn--peligro" href="{{ url_for('borrar_paciente', id_paciente=Paciente[0]) }}">Dar de baja</a>
+					{% endif %}
+					{% endif %}
+				</div>
+			</div>
+
+			<section class="panel">
+				<div class="panel__cabeza"><h2>Datos del paciente</h2></div>
+				<div class="panel__cuerpo">
+					<dl class="datos-consulta">
+						<div><dt>Número</dt><dd>{{ Paciente[0] }}</dd></div>
+						<div><dt>CURP</dt><dd>{{ Paciente[6] or 'Sin CURP' }}</dd></div>
+						<div><dt>Fecha de nacimiento</dt><dd>{{ Paciente[4].strftime('%d/%m/%Y') }} ({{ Paciente[8] }} años)</dd></div>
+						<div><dt>Sexo</dt><dd>{{ Paciente[5] }}</dd></div>
+						<div><dt>Estado</dt><dd>{{ Paciente[7] }}</dd></div>
+						<div><dt>Consultas</dt><dd>{{ Paciente[9] }}</dd></div>
+						<div><dt>Última consulta</dt><dd>{{ Paciente[10].strftime('%d/%m/%Y') if Paciente[10] else 'Ninguna' }}</dd></div>
+						<div><dt>Consentimiento vigente</dt><dd>{{ 'Sí' if Paciente[11] else 'No' }}</dd></div>
+					</dl>
+				</div>
+			</section>
+
+			<h2>Consultas del paciente</h2>
+			{% if session['rol'] == 'medico' %}<p class="tenue">Solo se muestran las consultas que tú atendiste.</p>{% endif %}
+			<div class="tabla-caja">
+			<table>
+				<thead>
+				<tr>
+					<th>No.</th>
+					<th>Fecha</th>
+					<th>Médico</th>
+					<th>Institución</th>
+					<th>Tipo</th>
+					<th>Diagnóstico principal</th>
+					<th>Estado</th>
+				</tr>
+				</thead>
+				<tbody>
+				{% for c in Consultas %}
+				<tr>
+					<td><a href="{{ url_for('consulta', id_consulta=c[0]) }}">{{ c[0] }}</a></td>
+					<td>{{ c[1].strftime('%d/%m/%Y %H:%M') }}</td>
+					<td>{{ c[3] }}</td>
+					<td>{{ c[4] }}</td>
+					<td>{{ c[5] }}</td>
+					<td>{{ c[8] or '' }}</td>
+					<td>{{ c[7] }}</td>
+				</tr>
+				{% else %}
+				<tr><td colspan="7">Sin consultas.</td></tr>
+				{% endfor %}
+				</tbody>
+			</table>
+			</div>
+		</main>
+	</body>
+</html>

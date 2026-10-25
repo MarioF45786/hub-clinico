@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Registrar médico - Hub Clínico</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/hub.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+	</head>
+	<body>
+		{% include "nav.html" %}
+
+		<main class="contenido">
+			<h1>Registrar médico</h1>
+			<p id="error" style="color:#b42318"></p>
+
+<!---INICIO FORMULARIO---!>
+<form class="panel panel__cuerpo formulario" action="/medicos/registra" method="POST" novalidate onsubmit="return validarMedico()">
+	<br>
+	<div class="fila-campos">
+		<div class="campo">
+			<label for="cedula">Cédula profesional:</label>
+			<input type="text" id="cedula" name="cedula" maxlength="8" value="{{ Datos.get('cedula', '') }}" required>
+			<small>7 u 8 dígitos</small>
+		</div>
+		<div class="campo">
+			<label for="nombre">Nombre(s):</label>
+			<input type="text" id="nombre" name="nombre" maxlength="100" value="{{ Datos.get('nombre', '') }}" required>
+		</div>
+		<div class="campo">
+			<label for="apellido_paterno">Apellido paterno:</label>
+			<input type="text" id="apellido_paterno" name="apellido_paterno" maxlength="100" value="{{ Datos.get('apellido_paterno', '') }}" required>
+		</div>
+		<div class="campo">
+			<label for="apellido_materno">Apellido materno:</label>
+			<input type="text" id="apellido_materno" name="apellido_materno" maxlength="100" value="{{ Datos.get('apellido_materno', '') }}">
+		</div>
+	</div>
+
+	<div class="fila-campos">
+		<div class="campo">
+			<label for="especialidad">Especialidad:</label>
+			<input type="text" id="especialidad" name="especialidad" maxlength="100" value="{{ Datos.get('especialidad', '') }}">
+		</div>
+		<div class="campo">
+			<label for="cedula_especialidad">Cédula de especialidad:</label>
+			<input type="text" id="cedula_especialidad" name="cedula_especialidad" maxlength="20" value="{{ Datos.get('cedula_especialidad', '') }}">
+		</div>
+	</div>
+
+	<div class="fila-campos">
+		<div class="campo">
+			<label for="id_institucion">Institución donde trabaja:</label>
+			<select id="id_institucion" name="id_institucion" required>
+				<option value="">-- Seleccionar --</option>
+				{% for i in Instituciones %}
+				<option value="{{ i[0] }}" {% if Datos.get('id_institucion') == i[0]|string %} selected {% endif %}>{{ i[1] }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div class="campo">
+			<label for="rol_institucion">Rol en la institución:</label>
+			<select id="rol_institucion" name="rol_institucion">
+				<option value="medico_tratante">Médico tratante</option>
+				<option value="medico_guardia" {% if Datos.get('rol_institucion') == 'medico_guardia' %} selected {% endif %}>Médico de guardia</option>
+				<option value="jefe_servicio" {% if Datos.get('rol_institucion') == 'jefe_servicio' %} selected {% endif %}>Jefe de servicio</option>
+				<option value="quimico_laboratorista" {% if Datos.get('rol_institucion') == 'quimico_laboratorista' %} selected {% endif %}>Químico laboratorista</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="acciones">
+		<button class="btn" type="submit">Guardar</button>
+		<a class="btn btn--sec" href="/medicos">Cancelar</a>
+	</div>
+</form>
+<!---FIN FORMULARIO---!>
+		</main>
+
+		<script>
+			function validarMedico() {
+				var error = document.getElementById("error");
+				var cedula = document.getElementById("cedula").value.trim();
+				var nombre = document.getElementById("nombre").value.trim();
+				var apellido = document.getElementById("apellido_paterno").value.trim();
+				var institucion = document.getElementById("id_institucion").value;
+
+				if (cedula == "" || nombre == "" || apellido == "" || institucion == "") {
+					error.textContent = "Cédula, nombre, apellido paterno e institución son obligatorios.";
+					return false;
+				}
+				if (!/^[0-9]{7,8}$/.test(cedula)) {
+					error.textContent = "La cédula profesional debe tener 7 u 8 dígitos.";
+					return false;
+				}
+				return true;
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Cancelar consulta - Hub Clínico</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/hub.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+	</head>
+	<body>
+		{% include "nav.html" %}
+
+		<main class="contenido">
+			<h1>Cancelar consulta {{ Consulta[0] }}</h1>
+			<p>{{ Consulta[2] }} con {{ Consulta[4] }}, {{ Consulta[8].strftime('%d/%m/%Y %H:%M') }}.</p>
+			<p>La consulta <b>no se borra</b>: queda como <b>cancelada</b>. No se puede cancelar si ya tiene diagnósticos, signos vitales o medicamentos.</p>
+
+<!---INICIO FORMULARIO---!>
+<form class="panel panel__cuerpo formulario" action="/consultas/cancelar" method="POST" novalidate onsubmit="return confirmarCancelacion()">
+	<br>
+	<input type="hidden" name="id_consulta" value="{{ Consulta[0] }}">
+
+	<div class="campo">
+		<label for="motivo">Motivo de la cancelación:</label>
+		<textarea id="motivo" name="motivo" maxlength="200" required></textarea>
+	</div>
+
+	<div class="acciones">
+		<button class="btn btn--peligro" type="submit">Cancelar consulta</button>
+		<a class="btn btn--sec" href="{{ url_for('consulta', id_consulta=Consulta[0]) }}">Regresar</a>
+	</div>
+</form>
+<!---FIN FORMULARIO---!>
+		</main>
+
+		<script>
+			function confirmarCancelacion() {
+				if (document.getElementById("motivo").value.trim() == "") {
+					alert("Escribe el motivo de la cancelación.");
+					return false;
+				}
+				return confirm("¿Seguro que quieres cancelar esta consulta?");
+			}
+		</script>
+	</body>
+</html>

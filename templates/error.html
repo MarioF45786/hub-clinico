@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<title>Error - Hub Clínico</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/hub.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+	</head>
+	<body>
+		<main class="contenido">
+			<h1>Algo salió mal</h1>
+			<p>{{ mensaje }}</p>
+			<a class="btn" href="/">Volver al inicio</a>
+		</main>
+	</body>
+</html>

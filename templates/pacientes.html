@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Pacientes - Hub Clínico</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/hub.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+	</head>
+	<body>
+		{% include "nav.html" %}
+
+		<main class="contenido">
+			<div class="cabecera">
+				<h1>Pacientes</h1>
+				{% if session['rol'] == 'coordinador' %}
+				<a class="btn" href="/pacientes/insertar">Registrar paciente</a>
+				{% endif %}
+			</div>
+
+			<!--- Búsqueda y filtro (se mandan por GET a /pacientes) --->
+			<form class="filtros" action="/pacientes" method="GET">
+				<div class="campo">
+					<label for="buscar">Nombre, CURP o número</label>
+					<input type="search" id="buscar" name="buscar" value="{{ buscar }}">
+				</div>
+				<div class="campo">
+					<label for="estado">Estado</label>
+					<select id="estado" name="estado">
+						<option value="activo" {% if estado == 'activo' %} selected {% endif %}>Activos</option>
+						<option value="inactivo" {% if estado == 'inactivo' %} selected {% endif %}>Dados de baja</option>
+						<option value="fusionado" {% if estado == 'fusionado' %} selected {% endif %}>Fusionados</option>
+						<option value="" {% if estado == '' %} selected {% endif %}>Todos</option>
+					</select>
+				</div>
+				<button class="btn btn--sec" type="submit">Buscar</button>
+			</form>
+
+			<p class="tenue">{{ Pacientes | length }} paciente(s)</p>
+
+			<div class="tabla-caja">
+			<table>
+				<thead>
+				<tr>
+					<th>No.</th>
+					<th>Nombre</th>
+					<th>CURP</th>
+					<th>Nacimiento</th>
+					<th>Edad</th>
+					<th>Sexo</th>
+					<th>Consultas</th>
+					<th>Estado</th>
+					<th></th>
+				</tr>
+				</thead>
+				<tbody>
+				{% for paciente in Pacientes %}
+				<tr>
+					<td>{{ paciente[0] }}</td>
+					<td><a href="{{ url_for('paciente', id_paciente=paciente[0]) }}">{{ paciente[1] }}</a></td>
+					<td class="mono">{{ paciente[2] or '' }}</td>
+					<td>{{ paciente[3].strftime('%d/%m/%Y') }}</td>
+					<td>{{ paciente[4] }}</td>
+					<td>{{ paciente[5] }}</td>
+					<td>{{ paciente[6] }}</td>
+					<td><span class="chip {% if paciente[8] == 'activo' %}chip--ok{% else %}chip--alerta{% endif %}">{{ paciente[8] }}</span></td>
+					<td>
+						<a class="btn btn--sec btn--chico" href="{{ url_for('paciente', id_paciente=paciente[0]) }}">Ver</a>
+						{% if session['rol'] == 'coordinador' and paciente[8] == 'activo' %}
+						<a class="btn btn--sec btn--chico" href="{{ url_for('editar_paciente', id_paciente=paciente[0]) }}">Editar</a>
+						<a class="btn btn--peligro btn--chico" href="{{ url_for('borrar_paciente', id_paciente=paciente[0]) }}">Baja</a>
+						{% endif %}
+					</td>
+				</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+			</div>
+		</main>
+	</body>
+</html>
